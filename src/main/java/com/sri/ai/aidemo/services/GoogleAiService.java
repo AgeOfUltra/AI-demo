@@ -47,7 +47,11 @@ public class GoogleAiService implements  AIService{
         PromptTemplate promptTemplate = new PromptTemplate("You are an expert in traditional cuisines.\n" +
                 "You provide information about a specific dish from a specific country.\n" +
                 "Answer the question: What is the traditional cuisine of {country}?" +
-                "Return a list of {numCuisines} in {language}");
+                "Return a list of {numCuisines} in {language}" +
+                "Avoid giving information about fictional places. If the country is fictional\n" +
+                "or non-existent " +
+                "answer: I don't know ask for valid Country!"
+        );
         Prompt prompt = promptTemplate.create(Map.of("country", country, "numCuisines", numCuisines, "language", language));
 
 
