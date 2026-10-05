@@ -57,4 +57,16 @@ public class GoogleAiService implements  AIService{
 
         return chatClient.prompt(prompt).call().entity(CountryCuisines.class);
     }
+
+    @Override
+    public String interviewGuideHelper(String company, String jobTitle, String strength, String weakness) {
+        PromptTemplate template = new PromptTemplate("You are a career coach. Provide tailored interview tips for the\n" +
+                "position of {jobTitle} at {company}.\n" +
+                "Highlight your strengths in {strengths} and prepare for questions\n" +
+                "about your weaknesses such as {weaknesses}.");
+
+        Prompt prompt = template.create(Map.of("jobTitle", jobTitle, "company", company, "strengths", strength,"weaknesses",weakness));
+
+        return chatClient.prompt(prompt).call().chatResponse().getResult().getOutput().getText();
+    }
 }

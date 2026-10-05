@@ -9,4 +9,6 @@ public interface AIService {
     String getTravelGuidence(String city, String month, String language, String budget);
 
     CountryCuisines getCuisines(String country, String numCuisines, String language);
+
+    String interviewGuideHelper(String company, String jobTitle, String strength, String weakness);
 }
