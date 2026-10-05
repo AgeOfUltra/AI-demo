@@ -23,7 +23,9 @@ public class TravelGuideController {
 	@PostMapping("/travelGuide")
 	public String getChatResponse(@RequestParam("city") String city, @RequestParam("month") String month,
 			@RequestParam("language") String language, @RequestParam("budget") String budget, Model model) {
-//		chatService.
+		String response = chatService.getTravelGuidence(city,month,language,budget);
+		model.addAttribute("city",city);
+		model.addAttribute("response",response);
 		return "travelGuide";
 	}
 
