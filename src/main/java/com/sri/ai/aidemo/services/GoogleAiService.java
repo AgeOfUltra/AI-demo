@@ -1,5 +1,6 @@
 package com.sri.ai.aidemo.services;
 
+import com.sri.ai.aidemo.text.prompttemplate.dto.CountryCuisines;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -38,5 +39,18 @@ public class GoogleAiService implements  AIService{
         System.out.println(prompt.getContents());
 
         return chatClient.prompt(prompt).call().chatResponse().getResult().getOutput().getText();
+    }
+
+    @Override
+    public CountryCuisines getCuisines(String country, String numCuisines, String language) {
+
+        PromptTemplate promptTemplate = new PromptTemplate("You are an expert in traditional cuisines.\n" +
+                "You provide information about a specific dish from a specific country.\n" +
+                "Answer the question: What is the traditional cuisine of {country}?" +
+                "Return a list of {numCuisines} in {language}");
+        Prompt prompt = promptTemplate.create(Map.of("country", country, "numCuisines", numCuisines, "language", language));
+
+
+        return chatClient.prompt(prompt).call().entity(CountryCuisines.class);
     }
 }
