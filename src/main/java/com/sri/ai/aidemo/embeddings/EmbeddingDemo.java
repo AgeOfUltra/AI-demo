@@ -1,5 +1,6 @@
 package com.sri.ai.aidemo.embeddings;
 
+import com.sri.ai.aidemo.services.GoogleAiService;
 import com.sri.ai.aidemo.services.OpenAiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class EmbeddingDemo {
 
 	@Autowired
-	private OpenAiService service;
+	private GoogleAiService service;
 	
 	@GetMapping("/showEmbedding")
 	public String showEmbedDemo() {
@@ -23,6 +24,10 @@ public class EmbeddingDemo {
 
 	@PostMapping("/embedding")
 	public String embed(@RequestParam String text,Model model) {
+	float[] response = service.embed(text);
+
+	model.addAttribute("response",response);
+
 		return "embedDemo";
 
 	}
