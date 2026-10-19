@@ -8,10 +8,16 @@ import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.embedding.EmbeddingModel;
+import org.springframework.ai.image.ImageModel;
+import org.springframework.ai.image.ImagePrompt;
+import org.springframework.ai.image.ImageResponse;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MimeType;
+import org.springframework.util.MimeTypeUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -20,16 +26,17 @@ import java.util.Map;
 public class GoogleAiService implements  AIService{
 
     private final ChatClient chatClient;
-
-    @Autowired
-    private  EmbeddingModel embeddingModel;
+    private final EmbeddingModel embeddingModel;
     private final VectorStore vectorStore;
+    private final ImageModel genAiImageModel;
 
 
 
-    public GoogleAiService(ChatClient.Builder chatClient, VectorStore vectorStore) {
+    public GoogleAiService(ChatClient.Builder chatClient, EmbeddingModel embeddingModel, VectorStore vectorStore, ImageModel genAiImageModel) {
         this.chatClient = chatClient.build();
+        this.embeddingModel = embeddingModel;
         this.vectorStore = vectorStore;
+        this.genAiImageModel = genAiImageModel;
     }
 
     public ChatResponse generateAnswer(String question){
@@ -126,5 +133,14 @@ public class GoogleAiService implements  AIService{
         return vectorStore.similaritySearch(SearchRequest.builder().topK(3).query(query).build());
     }
 
+    public  String generateImage(String query){// return binary image
+        ImageResponse call = genAiImageModel.call(new ImagePrompt(query));
 
+        return call.getResult().getOutput().getB64Json();
+
+    }
+
+    public String explainImage(String prompt, String path) {
+        return chatClient.prompt().user(u-> u.text(prompt).media(MimeTypeUtils.IMAGE_JPEG,new FileSystemResource(path))).call().content();
+    }
 }

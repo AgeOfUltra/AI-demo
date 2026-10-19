@@ -12,7 +12,7 @@ import org.springframework.util.DigestUtils;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-@Component
+//@Component
 public class VectorInitializer {
 
     private final VectorStore vectorStore;
@@ -30,7 +30,7 @@ public class VectorInitializer {
                 })
                 .toList();
     }
-    @PostConstruct
+//    @PostConstruct
     public void init() {
         TokenTextSplitter tokenTextSplitter = TokenTextSplitter.builder()
                 .withChunkSize(100)              // target chunk size (tokens)

@@ -1,5 +1,6 @@
 package com.sri.ai.aidemo.imageprocessing;
 
+import com.sri.ai.aidemo.services.GoogleAiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,7 +14,7 @@ import com.sri.ai.aidemo.services.OpenAiService;
 public class ImageGenerationController {
 
 	@Autowired
-	private OpenAiService service;
+	private GoogleAiService service;
 
 	@GetMapping("/showImageGenerator")
 	public String showImageGenerator() {
@@ -23,6 +24,8 @@ public class ImageGenerationController {
 
 	@PostMapping("/imageGenerator")
 	public String imageGenerator(@RequestParam String prompt, Model model) {
+		String s = service.generateImage(prompt);
+		model.addAttribute("response",s);
 		return "imageGenerator";
 
 	}
