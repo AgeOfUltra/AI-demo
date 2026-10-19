@@ -14,7 +14,16 @@ spring:
           api-key: ${GOOGLEAI_API_KEY}
           text:
             model: gemini-embedding-2
+    vectorstore:
+      pinecone:
+        api-key: ${PINE_CONE_API_KEY}
+        index-name: springaidemo-01
+  servlet:
+    multipart:
+      max-file-size: 10MB
 #          max-output-tokens: 20
 #          temperature: 0.7
+
 server:
   port: 8081
+

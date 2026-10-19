@@ -2,10 +2,14 @@ package com.sri.ai.aidemo.services;
 
 import com.sri.ai.aidemo.text.prompttemplate.dto.CountryCuisines;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.ai.document.Document;
 import org.springframework.ai.embedding.EmbeddingModel;
+import org.springframework.ai.vectorstore.SearchRequest;
+import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,11 +23,13 @@ public class GoogleAiService implements  AIService{
 
     @Autowired
     private  EmbeddingModel embeddingModel;
+    private final VectorStore vectorStore;
 
 
 
-    public GoogleAiService(ChatClient.Builder chatClient) {
+    public GoogleAiService(ChatClient.Builder chatClient, VectorStore vectorStore) {
         this.chatClient = chatClient.build();
+        this.vectorStore = vectorStore;
     }
 
     public ChatResponse generateAnswer(String question){
@@ -82,6 +88,10 @@ public class GoogleAiService implements  AIService{
 
     }
 
+    public String answer(String query){
+        return chatClient.prompt(query).advisors(QuestionAnswerAdvisor.builder(vectorStore).build()).call().toString();
+    }
+
     public double findSimilarity(String text1, String text2){
 
         List<float[]> embed = embeddingModel.embed(List.of(text1,text2));
@@ -110,6 +120,9 @@ public class GoogleAiService implements  AIService{
         return dotProduct / (Math.sqrt(magnitudeA) * Math.sqrt(magnitudeB));
     }
 
+    public List<Document> searchJob(String query){
+        return vectorStore.similaritySearch(SearchRequest.builder().topK(3).query(query).build());
+    }
 
 
 }
