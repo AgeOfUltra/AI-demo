@@ -89,7 +89,9 @@ public class GoogleAiService implements  AIService{
     }
 
     public String answer(String query){
-        return chatClient.prompt(query).advisors(QuestionAnswerAdvisor.builder(vectorStore).build()).call().toString();
+        return chatClient.prompt(query)
+                .advisors(QuestionAnswerAdvisor.builder(vectorStore).build())
+                .call().chatResponse().getResult().getOutput().getText();
     }
 
     public double findSimilarity(String text1, String text2){
