@@ -1,6 +1,9 @@
 package com.sri.ai.aidemo.services;
 
+import com.sri.ai.aidemo.config.GemenaiTranscriptionModel;
+import com.sri.ai.aidemo.config.CustomeImageModel;
 import com.sri.ai.aidemo.text.prompttemplate.dto.CountryCuisines;
+import org.springframework.ai.audio.transcription.AudioTranscriptionPrompt;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.model.ChatResponse;
@@ -8,15 +11,12 @@ import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.embedding.EmbeddingModel;
-import org.springframework.ai.image.ImageModel;
 import org.springframework.ai.image.ImagePrompt;
 import org.springframework.ai.image.ImageResponse;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.MimeType;
 import org.springframework.util.MimeTypeUtils;
 
 import java.util.List;
@@ -28,15 +28,17 @@ public class GoogleAiService implements  AIService{
     private final ChatClient chatClient;
     private final EmbeddingModel embeddingModel;
     private final VectorStore vectorStore;
-    private final ImageModel genAiImageModel;
+    private final CustomeImageModel genAiImageModel;
+    private final GemenaiTranscriptionModel genAiTranscriptionModel;
 
 
 
-    public GoogleAiService(ChatClient.Builder chatClient, EmbeddingModel embeddingModel, VectorStore vectorStore, ImageModel genAiImageModel) {
+    public GoogleAiService(ChatClient.Builder chatClient, EmbeddingModel embeddingModel, VectorStore vectorStore, CustomeImageModel genAiImageModel, GemenaiTranscriptionModel genAiTranscriptionModel) {
         this.chatClient = chatClient.build();
         this.embeddingModel = embeddingModel;
         this.vectorStore = vectorStore;
         this.genAiImageModel = genAiImageModel;
+        this.genAiTranscriptionModel = genAiTranscriptionModel;
     }
 
     public ChatResponse generateAnswer(String question){
@@ -133,12 +135,14 @@ public class GoogleAiService implements  AIService{
         return vectorStore.similaritySearch(SearchRequest.builder().topK(3).query(query).build());
     }
 
-    public  String generateImage(String query){// return binary image
+    public String generateImage(String query) {
         ImageResponse call = genAiImageModel.call(new ImagePrompt(query));
+        String b64 = call.getResult().getOutput().getB64Json();
 
-        return call.getResult().getOutput().getB64Json();
-
+        // Add the data URI prefix so the browser knows it's a JPEG image
+        return "data:image/jpeg;base64," + b64;
     }
+
 
     public String explainImage(String prompt, String path) {
         return chatClient.prompt().user(u-> u.text(prompt).media(MimeTypeUtils.IMAGE_JPEG,new FileSystemResource(path))).call().content();
@@ -151,5 +155,11 @@ public class GoogleAiService implements  AIService{
                         .media(MimeTypeUtils.IMAGE_JPEG,new FileSystemResource(path1)))
                 .call().content();
 
+    }
+
+    public String speechToText(String path){
+
+        AudioTranscriptionPrompt transcriptionPrompt = new AudioTranscriptionPrompt(new FileSystemResource(path));
+        return genAiTranscriptionModel.call(transcriptionPrompt).getResult().getOutput();
     }
 }
