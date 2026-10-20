@@ -143,4 +143,13 @@ public class GoogleAiService implements  AIService{
     public String explainImage(String prompt, String path) {
         return chatClient.prompt().user(u-> u.text(prompt).media(MimeTypeUtils.IMAGE_JPEG,new FileSystemResource(path))).call().content();
     }
+
+    public String getDietAdvice(String prompt, String path, String path1) {
+        return chatClient.prompt()
+                .user(u-> u.text(prompt)
+                        .media(MimeTypeUtils.IMAGE_JPEG,new FileSystemResource(path))
+                        .media(MimeTypeUtils.IMAGE_JPEG,new FileSystemResource(path1)))
+                .call().content();
+
+    }
 }
