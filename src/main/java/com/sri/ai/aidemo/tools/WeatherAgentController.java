@@ -1,5 +1,6 @@
 package com.sri.ai.aidemo.tools;
 
+import com.sri.ai.aidemo.services.GoogleAiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,7 +14,7 @@ import com.sri.ai.aidemo.services.OpenAiService;
 public class WeatherAgentController {
 
 	@Autowired
-	private OpenAiService service;
+	private GoogleAiService service;
 
 	@GetMapping("/showWeatherAgent")
 	public String showWeatherAgent() {
@@ -22,6 +23,10 @@ public class WeatherAgentController {
 
 	@PostMapping("/weatherAgent")
 	public String weatherAgent(@RequestParam("query") String query, Model model) {
+
+		String s = service.callAgent(query);
+		model.addAttribute("weatherInfo",s);
+
 		return "weatherTool";
 	}
 }

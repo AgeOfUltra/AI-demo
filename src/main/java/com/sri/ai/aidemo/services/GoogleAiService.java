@@ -4,6 +4,7 @@ import com.sri.ai.aidemo.config.GemenaiTranscriptionModel;
 import com.sri.ai.aidemo.config.CustomeImageModel;
 import com.sri.ai.aidemo.config.GeminiTextToSpeechModel;
 import com.sri.ai.aidemo.text.prompttemplate.dto.CountryCuisines;
+import com.sri.ai.aidemo.tools.WeatherTools;
 import org.springframework.ai.audio.transcription.AudioTranscriptionPrompt;
 import org.springframework.ai.audio.tts.TextToSpeechModel;
 import org.springframework.ai.chat.client.ChatClient;
@@ -171,5 +172,12 @@ public class GoogleAiService implements  AIService{
     
     public byte[] textToSpeech(String text){
         return  speechModel.call(text);
+    }
+
+    public String callAgent(String query){
+        return chatClient.prompt(query)
+                .tools(new WeatherTools())
+                .call()
+                .content();
     }
 }
