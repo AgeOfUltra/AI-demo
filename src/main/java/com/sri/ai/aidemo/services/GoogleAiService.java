@@ -2,8 +2,10 @@ package com.sri.ai.aidemo.services;
 
 import com.sri.ai.aidemo.config.GemenaiTranscriptionModel;
 import com.sri.ai.aidemo.config.CustomeImageModel;
+import com.sri.ai.aidemo.config.GeminiTextToSpeechModel;
 import com.sri.ai.aidemo.text.prompttemplate.dto.CountryCuisines;
 import org.springframework.ai.audio.transcription.AudioTranscriptionPrompt;
+import org.springframework.ai.audio.tts.TextToSpeechModel;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.model.ChatResponse;
@@ -30,15 +32,19 @@ public class GoogleAiService implements  AIService{
     private final VectorStore vectorStore;
     private final CustomeImageModel genAiImageModel;
     private final GemenaiTranscriptionModel genAiTranscriptionModel;
+    private final TextToSpeechModel speechModel;
+    private final GeminiTextToSpeechModel textToSpeechModel;
 
 
 
-    public GoogleAiService(ChatClient.Builder chatClient, EmbeddingModel embeddingModel, VectorStore vectorStore, CustomeImageModel genAiImageModel, GemenaiTranscriptionModel genAiTranscriptionModel) {
+    public GoogleAiService(ChatClient.Builder chatClient, EmbeddingModel embeddingModel, VectorStore vectorStore, CustomeImageModel genAiImageModel, GemenaiTranscriptionModel genAiTranscriptionModel, TextToSpeechModel speechModel, GeminiTextToSpeechModel textToSpeechModel) {
         this.chatClient = chatClient.build();
         this.embeddingModel = embeddingModel;
         this.vectorStore = vectorStore;
         this.genAiImageModel = genAiImageModel;
         this.genAiTranscriptionModel = genAiTranscriptionModel;
+        this.speechModel = speechModel;
+        this.textToSpeechModel = textToSpeechModel;
     }
 
     public ChatResponse generateAnswer(String question){
@@ -161,5 +167,9 @@ public class GoogleAiService implements  AIService{
 
         AudioTranscriptionPrompt transcriptionPrompt = new AudioTranscriptionPrompt(new FileSystemResource(path));
         return genAiTranscriptionModel.call(transcriptionPrompt).getResult().getOutput();
+    }
+    
+    public byte[] textToSpeech(String text){
+        return  speechModel.call(text);
     }
 }
