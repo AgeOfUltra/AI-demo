@@ -26,6 +26,7 @@ import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MimeTypeUtils;
+import reactor.core.publisher.Flux;
 
 import java.util.List;
 import java.util.Map;
@@ -200,5 +201,9 @@ public class GoogleAiService implements  AIService{
                 .entity(GeminiModerationResult.class);
         return new GeminiModerationResult(
                 result.categories().any(), result.categories(), result.categoryScores());
+    }
+
+    public Flux<String> streamAnswer(String message) {
+        return chatClient.prompt(message).stream().content();
     }
 }
