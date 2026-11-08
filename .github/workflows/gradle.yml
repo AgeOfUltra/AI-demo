@@ -37,7 +37,7 @@ jobs:
     - name: Build and push to docker repository
       uses: mr-smithers-excellent/docker-build-push@v7
       with:
-        image: marveltony/AI-DEMO
+        image: marveltony/ai-demo
         registry: docker.io
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
