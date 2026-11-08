@@ -1,10 +1,10 @@
-FROM gradle:9-jdk-25-and-26-alpine
+# Stage 1: Build
+FROM gradle:9-jdk26 AS build
 WORKDIR /app
 COPY build.gradle settings.gradle ./
-run gradle dependencies --no-daemon
-copy src ./src
+RUN gradle dependencies --no-daemon
+COPY src ./src
 RUN gradle bootJar --no-daemon -x test
-
 
 # Stage 2: Run
 FROM eclipse-temurin:26-jre
